@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DefaultController extends AbstractController
 {
@@ -70,11 +71,15 @@ class DefaultController extends AbstractController
      * @Route("/home/", name="home")
      */
 
-    public function home(Request $request, MyService $service){
+    public function home(Request $request){
 
         $entityManager = $this->getDoctrine()->getManager();
-//        $service->someAction();
-        dump($service->secService->someMethod());
+
+        $user = $entityManager->getRepository(User::class)->find(1);
+        $user->setName('Rob');
+        $entityManager->persist($user);
+        $entityManager->flush();
+
 
         return $this->render('default/index.html.twig',['controller_name' => 'DefaultController',
     ]);

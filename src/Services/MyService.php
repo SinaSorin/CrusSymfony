@@ -2,42 +2,21 @@
 
 namespace App\Services;
 use App\Services\MySecondService;
+use Doctrine\ORM\Event\PostFlushEventArgs;
 
 class MyService {
 
-    public function __construct($service)
+    public function __construct()
     {
-        dump($service);
-        $this->secService = $service;
+        dump('Hello');
+    }
+    public function postFlush(PostFlushEventArgs $args){
+        dump('Hello');
+        dump($args);
+    }
+    public function clear(){
+       dump('clear...');
     }
 
-
-
-
-//    public $logger;
-//    public $my;
-
-//    public function someAction(){
-//        dump($this->logger);
-//        dump($this->my);
-//    }
-
-//    public function someAction(){
-//        dump($this->service->doSomething2());
-//    }
-
-
-
-
-
-
-
-    /**
-     * @required
-     *
-     */
-//    public function setSecondService(MySecondService $second_service){
-//        dump($second_service);
-//    }
 
 }
