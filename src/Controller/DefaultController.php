@@ -2,12 +2,18 @@
 
 namespace App\Controller;
 
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
 use App\Entity\Video;
+use App\Entity\Address;
+use App\Entity\Author;
+use App\Entity\File;
+use App\Entity\Pdf;
 use App\Services\GiftsService;
+use App\Services\MyService;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -64,25 +70,11 @@ class DefaultController extends AbstractController
      * @Route("/home/", name="home")
      */
 
-    public function home(Request $request){
+    public function home(Request $request, MyService $service){
 
         $entityManager = $this->getDoctrine()->getManager();
-
-        $user = $this->getDoctrine()->getRepository(User::class)->find(1);
-
-        $video = $this->getDoctrine()->getRepository(Video::class)->find(1);
-
-        $user->removeVideo($video);
-        $entityManager->flush();
-
-        foreach($user->getVideos() as $video){
-            dump($video->getTitle());
-        }
-
-//        $entityManager->remove($user);
-//
-//        dump($user);
-
+//        $service->someAction();
+        dump($service->secService->someMethod());
 
         return $this->render('default/index.html.twig',['controller_name' => 'DefaultController',
     ]);

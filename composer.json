@@ -43,7 +43,7 @@
         "symfony/phpunit-bridge": "^5.3",
         "symfony/stopwatch": "^4.2",
         "symfony/var-dumper": "^4.2",
-        "symfony/web-profiler-bundle": "^4.2",
+        "symfony/web-profiler-bundle": "4.2.*",
         "symfony/web-server-bundle": "4.2.*"
     },
     "config": {
