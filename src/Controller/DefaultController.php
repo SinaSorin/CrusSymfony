@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 
+use App\Services\ServiceInerface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
@@ -13,13 +15,14 @@ use App\Entity\Author;
 use App\Entity\File;
 use App\Entity\Pdf;
 use App\Services\GiftsService;
-use App\Services\MyService;
+use App\Services\ServiceInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
 class DefaultController extends AbstractController
 {
@@ -71,14 +74,20 @@ class DefaultController extends AbstractController
      * @Route("/home/", name="home")
      */
 
-    public function home(Request $request){
+    public function home(Request $request, ServiceInterface  $service){
 
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $user = $entityManager->getRepository(User::class)->find(1);
-        $user->setName('Rob');
-        $entityManager->persist($user);
-        $entityManager->flush();
+        $cache = new FilesystemAdapter();
+        $posts = $cache->getItem('database.get_posts');
+        if(!$posts->isHit()){
+            $posts_from_db = ['post 1', 'post 2', 'post 3'];
+            dump('connected with database ... ');
+            $posts->set(serialize(($posts_from_db)));
+            $posts->expiresAfter(5);
+            $cache->save($posts);
+        }
+        //$cache->deleteItem('database.get_posts');
+        $cache->clear();
+        dump(unserialize($posts->get()));
 
 
         return $this->render('default/index.html.twig',['controller_name' => 'DefaultController',

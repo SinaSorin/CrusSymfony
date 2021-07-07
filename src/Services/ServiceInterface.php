@@ -2,6 +2,6 @@
 
 namespace App\Services;
 
-interface ServiceInerface {
-    
+interface ServiceInterface {
+
 }

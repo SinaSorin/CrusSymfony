@@ -1,0 +1,4 @@
+imports:
+    - {resources: services.yaml}
+services:
+    App\Services\ServicesInterface: '@App\Services\MySecondService'
