@@ -1,0 +1,6 @@
+php bin/console doctrine:schema:drop -n -q --force --full-database && php bin/console make:migration && php bin/console doctrine:migrations:migrate -n -q
+
+
+If you want to load fixtures, add to the above:
+
+&& bin/console doctrine:fixtures:load -n -q
