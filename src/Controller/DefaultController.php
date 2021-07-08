@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Services\ServiceInerface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
@@ -23,6 +24,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
+use Zend\Code\Generator\DocBlock\Tag;
+
 
 class DefaultController extends AbstractController
 {
@@ -76,18 +79,6 @@ class DefaultController extends AbstractController
 
     public function home(Request $request, ServiceInterface  $service){
 
-        $cache = new FilesystemAdapter();
-        $posts = $cache->getItem('database.get_posts');
-        if(!$posts->isHit()){
-            $posts_from_db = ['post 1', 'post 2', 'post 3'];
-            dump('connected with database ... ');
-            $posts->set(serialize(($posts_from_db)));
-            $posts->expiresAfter(5);
-            $cache->save($posts);
-        }
-        //$cache->deleteItem('database.get_posts');
-        $cache->clear();
-        dump(unserialize($posts->get()));
 
 
         return $this->render('default/index.html.twig',['controller_name' => 'DefaultController',
