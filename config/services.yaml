@@ -6,6 +6,7 @@
 parameters:
     download_directory: '../public/'
     #admin_email: admin@admin.com
+    videos_directory: '%kernel.project_dir%/public/uploads/videos'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -28,15 +29,19 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Controller\DefaultController:
-
-        bind:
-            $logger: '@monolog.logger.doctrine'
+#    App\Controller\DefaultController:
+#
+#        bind:
+#            $logger: '@monolog.logger.doctrine'
 
 
 
     App\Services\ServiceInterface: '@App\Services\MyService'
 
+#    App\Listeners\VideoCreatedListener:
+#        tags:
+#            - { name: kernel.event_listener, event: video.created.event, method: onVideoCreatedEvent }
+#
 
 
 

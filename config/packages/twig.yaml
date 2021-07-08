@@ -6,3 +6,4 @@ twig:
     globals:
         
         ga_code: GAcode-123
+    form_themes: ['bootstrap_4_layout.html.twig']

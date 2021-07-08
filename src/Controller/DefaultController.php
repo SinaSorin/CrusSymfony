@@ -25,12 +25,16 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Zend\Code\Generator\DocBlock\Tag;
-
+use App\Events\VideoCreatedEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use App\Form\VideoFormType;
 
 class DefaultController extends AbstractController
 {
-    public function __construct($logger){
-        
+
+
+    public function __construct(EventDispatcherInterface $dispatcher){
+        $this->dispatchcer = $dispatcher;
     }
 
 
@@ -77,11 +81,35 @@ class DefaultController extends AbstractController
      * @Route("/home/", name="home")
      */
 
-    public function home(Request $request, ServiceInterface  $service){
+    public function home(Request $request){
+        $entityManager = $this->getDoctrine()->getManager();
+        $videos = $entityManager->getRepository(Video::class)->findAll();
+        dump($videos);
+        $video = new Video();
+//
+//        $video = $entityManager->getRepository(Video::class)->find(1);
 
+        //$video->setTitle('Write a blog post');
+        //$video->setCreatedAt(new \DateTime('tomorrow'));
+        $form = $this->createForm(VideoFormType::class, $video);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
 
+            $file = $form->get('file')->getData();
+            $filename = shal(random_bites(14).'.'.$file->guessExtension());
+            $file->move(
+                $this->getParameter('videos_directory'),
+                $filename
+            );
+            $video->setFile($filename);
+            $entityManager->persist($video);
+            $entityManager->flush();
+//            dump($form->getData());
+            return $this->redirectToRoute('home');
+        }
 
         return $this->render('default/index.html.twig',['controller_name' => 'DefaultController',
+            'form' => $form->createView(),
     ]);
     
     }
