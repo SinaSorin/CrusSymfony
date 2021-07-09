@@ -19,7 +19,7 @@
         <li>Your controller at <code><a href="{{ 'D:/curs/project/src/Controller/DefaultController.php'|file_link(0) }}">src/Controller/DefaultController.php</a></code></li>
         <li>Your template at <code><a href="{{ 'D:/curs/project/templates/default/index.html.twig'|file_link(0) }}">templates/default/index.html.twig</a></code></li>
     </ul>
-    {% form_theme form 'bootstrap_4_layout.html.twig' %}
+{#    {% form_theme form 'bootstrap_4_layout.html.twig' %}#}
 
 
     <p>The google tracking code is: {{ga_code}}</p>
@@ -28,21 +28,37 @@
        {'number': 5}
     ))}}
 
-    {{ form_start(form) }}
-    {{ form_label(form.title) }}
-    {{ form_widget(form.title) }}
-    {% if form.created_at is defined %}
-    {{ form_label(form.created_at) }}
-    {{ form_widget(form.created_at) }}
-    {% endif %}
-    {{ form_label(form.file) }}
-    {{ form_widget(form.file) }}
-    {{ form_label(form.agreeTerms) }}
-    {{ form_widget(form.agreeTerms) }}
-    {{ form_label(form.save) }}
-    {{ form_widget(form.save) }}
-    {{ form_end(form) }}
+{#    {{ form_start(form) }}#}
+{#    {{ form_label(form.title) }}#}
+{#    {{ form_widget(form.title) }}#}
+{#    {% if form.created_at is defined %}#}
+{#    {{ form_label(form.created_at) }}#}
+{#    {{ form_widget(form.created_at) }}#}
+{#    {% endif %}#}
+{#    {{ form_label(form.file) }}#}
+{#    {{ form_widget(form.file) }}#}
+{#    {{ form_label(form.agreeTerms) }}#}
+{#    {{ form_widget(form.agreeTerms) }}#}
+{#    {{ form_label(form.save) }}#}
+{#    {{ form_widget(form.save) }}#}
+{#    {{ form_end(form) }}#}
 {#    {{ form(form) }}#}
+
+    {% if app.user %}
+    <a href="{{ path('logout') }}">logout</a>
+    {% endif %}
+
+    {% if is_granted('ROLE_ADMIN') %}
+        <a href="...">Delete something, only admin can do this</a>
+    {% endif %}
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <P>Username: {{ app.user.username }}</P>
+    {% endif %}
+
+    <a href="{{ path('login') }}">awsome link</a>
+
+        {{ 'symfony.learning'|transchoice(count) }}
+
 
 </div>
 {% block javascripts %}

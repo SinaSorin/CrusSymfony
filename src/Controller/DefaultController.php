@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 
+use App\Entity\SecurityUser;
+use App\Form\RegisterUserType;
 use App\Services\ServiceInerface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
@@ -24,10 +26,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Zend\Code\Generator\DocBlock\Tag;
 use App\Events\VideoCreatedEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use App\Form\VideoFormType;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class DefaultController extends AbstractController
 {
@@ -48,10 +54,10 @@ class DefaultController extends AbstractController
 
         $users= $this->getDoctrine()->getRepository(User::class)->findAll();
  
-        if(!$users)
-        {
-            throw $this->createNotFoundException('The users do not exist');
-        }
+//        if(!$users)
+//        {
+//            throw $this->createNotFoundException('The users do not exist');
+//        }
         // exit($request->query->get('page','default'));
         // exit($request->server->get('HTTP_HOST'));
         // $request->isXmlHttpRequest();
@@ -64,55 +70,77 @@ class DefaultController extends AbstractController
     ]);
     }
 
-    /**
-     * @Route("/page", name="default20")
-     */
-    public function index20()
-    {
-        
-
-
-        return $this->render('default/index.html.twig',['controller_name' => 'DefaultController',
-        
-    ]);
-    }
 
     /**
      * @Route("/home/", name="home")
      */
 
-    public function home(Request $request){
-        $entityManager = $this->getDoctrine()->getManager();
-        $videos = $entityManager->getRepository(Video::class)->findAll();
-        dump($videos);
-        $video = new Video();
-//
-//        $video = $entityManager->getRepository(Video::class)->find(1);
+    public function home(Request $request, UserPasswordEncoderInterface $passwordEncoder,
+    TranslatorInterface $translator){
 
-        //$video->setTitle('Write a blog post');
-        //$video->setCreatedAt(new \DateTime('tomorrow'));
-        $form = $this->createForm(VideoFormType::class, $video);
-        $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()){
+        $translated = $translator->trans('some.key');
+        dump($translated);
+        dump($request->getLocale());
 
-            $file = $form->get('file')->getData();
-            $filename = shal(random_bites(14).'.'.$file->guessExtension());
-            $file->move(
-                $this->getParameter('videos_directory'),
-                $filename
-            );
-            $video->setFile($filename);
-            $entityManager->persist($video);
-            $entityManager->flush();
-//            dump($form->getData());
-            return $this->redirectToRoute('home');
-        }
 
         return $this->render('default/index.html.twig',['controller_name' => 'DefaultController',
-            'form' => $form->createView(),
+            'count' => 0,
+
     ]);
     
     }
+
+    /**
+     * @route({
+     *     "en": "/login",
+     *     "pl": "/logowanie"
+     * }
+     *     , name="login")
+     */
+    public function login(AuthenticationUtils $authenticationUtils){
+        $error = $authenticationUtils->getLastAuthenticationError();
+        $lasUsername = $authenticationUtils->getLastUsername();
+        return $this->render('security/login.html.twig', array(
+            'last_username' => $lasUsername,
+            'error' => $error,
+
+        ));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    public function home(Request $request, \Swift_Mailer $mailer){
+//        $message = (new \Swift_Message('Hello Email'))
+//            ->setFrom('send@example.com')
+//            ->setTo('recipient@example.com')
+//            ->setBody(
+//                $this->renderView(
+//                    'emails/registration.html.twig',
+//                    array('name' => 'Robert')
+//                ),
+//                'text/html'
+//            );
+//
+//        $mailer->send($message);
+//        return $this->render('default/index.html.twig',['controller_name' => 'DefaultController',
+//
+//        ]);
+//
+//    }
+
 
     public function mostPopularPosts($number = 3){
         //database call:
@@ -215,13 +243,5 @@ class DefaultController extends AbstractController
     public function index3(){
         return new Response('An advanced route example');
     }
-    /**
-     * @Route({
-     *  "nl": "/over-ons",
-     *  "en": "/about-us"
-     * }, name="about_us")
-     */
-    public function index4(){
-        return new Response('Translated routes');
-    }
+
 }
